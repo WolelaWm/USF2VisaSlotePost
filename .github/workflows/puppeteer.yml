@@ -1,0 +1,62 @@
+name: Visa Slot Checker Automation
+
+on:
+  schedule:
+    # Schedule 1: Starts at 0, then every 10 minutes
+    - cron: "0-59/10 * * * *"
+
+    # Schedule 2: Starts at 3, then every 10 minutes
+    - cron: "3-59/10 * * * *"
+
+    # Schedule 3: Starts at 6, then every 10 minutes
+    - cron: "6-59/10 * * * *"
+
+    # Schedule 4: Starts at 9, then every 10 minutes
+    - cron: "9-59/10 * * * *"
+  workflow_dispatch: # Allows manual trigger
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libatk1.0-0 \
+            libgdk-pixbuf2.0-0 \
+            libnspr4 \
+            libnss3 \
+            libx11-xcb1 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxrandr2 \
+            libgbm1 \
+            libxss1 \
+            libxtst6
+
+      - name: Install Dependencies
+        run: npm ci # Use `ci` for clean installs to reduce issues.
+
+      - name: Fix Puppeteer Permission
+        run: chmod -R 755 node_modules/puppeteer
+
+      - name: Install Puppeteer Browser Manually
+        run: npx puppeteer browsers install chrome
+        env:
+          CI: false
+
+      - name: Run Script
+        run: node index.js
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          PASSWORD: ${{ secrets.PASSWORD }}
