@@ -12,7 +12,7 @@ on:
     - cron: "6-59/10 * * * *"
 
     # Schedule 4: Starts at 9, then every 10 minutes
-    - cron: "9-59/10 * * * *"
+   # - cron: "9-59/10 * * * *"
   workflow_dispatch: # Allows manual trigger
 jobs:
   run-script:
